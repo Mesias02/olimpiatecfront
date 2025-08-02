@@ -420,7 +420,7 @@ export default function MatchManager() {
                       <span className="mm-table-status mm-status-cancelled">Cancelado</span>
                     )}
                   </td>
-<td style={{ display: 'flex', gap: '5px', justifyContent: 'center' }}>
+<td style={{ display: 'flex', gap: '5px', justifyContent: 'center', padding: '15px' }}>
   <button
     className="btn-primary btn-sm"
     onClick={() => handleEdit(match)}

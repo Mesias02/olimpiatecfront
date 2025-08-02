@@ -337,24 +337,40 @@ export default function TeamPanel() {
       />
 
       <Modal
-        isOpen={showModal}
-        onClose={() => { setShowModal(false); setEditId(null); }}
-        title={editId ? "Editar Equipo" : "Crear Equipo"}
-        size="md"
-      >
-        <form onSubmit={handleSubmit} className="team-panel-modal-form">
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
-              Nombre del equipo
-            </label>
-            <input 
-              type="text" 
-              placeholder="Nombre del equipo" 
-              value={form.name} 
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              style={{ width: '100%' }}
-            />
-          </div>
+  isOpen={showModal}
+  onClose={() => { setShowModal(false); setEditId(null); }}
+  title={editId ? "Editar Equipo" : "Crear Equipo"}
+  size="md"
+>
+  <form onSubmit={handleSubmit} className="team-panel-modal-form">
+    {/* Instrucción antes del formulario */}
+    <p style={{
+      color: "#2563eb",
+      fontWeight: "600",
+      fontSize: "0.95rem",
+      marginBottom: "16px",
+      backgroundColor: "#e0f2fe",
+      padding: "10px",
+      borderRadius: "8px",
+      border: "1px solid #bae6fd",
+      textAlign: "center",
+    }}>
+      Antes de registrar un equipo, debe existir el jugador al que se le asignará.
+    </p>
+
+    {/* Resto del formulario igual */}
+    <div>
+      <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
+        Nombre del equipo
+      </label>
+      <input 
+        type="text" 
+        placeholder="Nombre del equipo" 
+        value={form.name} 
+        onChange={(e) => setForm({ ...form, name: e.target.value })}
+        style={{ width: '100%' }}
+      />
+    </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>

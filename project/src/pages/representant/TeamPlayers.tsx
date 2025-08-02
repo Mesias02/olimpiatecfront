@@ -280,10 +280,20 @@ export default function TeamPlayers() {
                 <td>{p.cedula}</td>
                 <td>{p.dorsal}</td>
                 <td>{p.carrera}</td>
-                <td>
-                  <button className="btn-primary btn-sm padding: 2px" onClick={() => handleEdit(p)}>Editar</button>
-                  <button className="btn-secondary btn-sm" onClick={() => handleDelete(p.id)}>Eliminar</button>
-                </td>
+                <td style={{ display: 'flex', gap: '5px', justifyContent: 'center', padding: '15px' }}>
+  <button
+    className="btn-primary btn-sm"
+    onClick={() => handleEdit(p)}
+  >
+    Editar
+  </button>
+  <button
+    className="btn-secondary btn-sm"
+    onClick={() => handleDelete(p.id)}
+  >
+    Eliminar
+  </button>
+</td>
               </tr>
             ))}
           </tbody>
