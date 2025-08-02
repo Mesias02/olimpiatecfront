@@ -420,17 +420,22 @@ export default function MatchManager() {
                       <span className="mm-table-status mm-status-cancelled">Cancelado</span>
                     )}
                   </td>
-                  <td>
-                    <button
-                      className="btn-primary btn-sm"
-                      onClick={() => handleEdit(match)}
-                      style={{ marginRight: 6 }}
-                    >Editar</button>
-                    <button
-                      className="btn-secondary btn-sm"
-                      onClick={() => handleDelete(match.id)}
-                    >Eliminar</button>
-                  </td>
+<td style={{ display: 'flex', gap: '5px', justifyContent: 'center' }}>
+  <button
+    className="btn-primary btn-sm"
+    onClick={() => handleEdit(match)}
+  >
+    Editar
+  </button>
+  <button
+    className="btn-secondary btn-sm"
+    onClick={() => handleDelete(match.id)}
+  >
+    Eliminar
+  </button>
+</td>
+
+
                 </tr>
               ))}
               {filteredMatches.length === 0 && (

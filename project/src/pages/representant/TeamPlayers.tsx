@@ -4,7 +4,7 @@ import { Player } from "../../types/player";
 import { getPlayersByTeam, updatePlayer, deletePlayer } from "../../api/players";
 import { getTeams, getTeamOfRepresentative } from "../../api/teams";
 import { jwtDecode } from "jwt-decode";
-import ConfirmDialog from "../../components/ConfirmDialog"; // ← Importación añadida
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 interface TokenPayload {
   sub: string;
@@ -128,18 +128,104 @@ export default function TeamPlayers() {
   };
 
   return (
-    <main className="container">
+    <main className="team-players-container">
+      <style>{`
+        .team-players-container {
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 24px;
+          background: #fff;
+          border-radius: 14px;
+          box-shadow: 0 2px 12px #0002;
+        }
+        @media (max-width: 700px) {
+          .team-players-container {
+            padding: 10px;
+            border-radius: 6px;
+          }
+        }
+        h2 {
+          color: #2563eb;
+          font-weight: bold;
+        }
+        .form-player-edit {
+          display: grid;
+          gap: 10px;
+          max-width: 450px;
+          margin-bottom: 18px;
+          background: #f9fafb;
+          padding: 18px 14px;
+          border-radius: 10px;
+        }
+        @media (max-width: 500px) {
+          .form-player-edit {
+            max-width: 100%;
+            padding: 10px 2px;
+          }
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 18px;
+          min-width: 540px;
+        }
+        th, td {
+          padding: 10px 7px;
+          text-align: center;
+        }
+        th {
+          background: #e5e7eb;
+          color: #22223b;
+        }
+        tr:nth-child(even) td {
+          background: #f1f5f9;
+        }
+        @media (max-width: 700px) {
+          table {
+            min-width: 420px;
+            font-size: 13px;
+          }
+          th, td {
+            padding: 8px 3px;
+          }
+        }
+        @media (max-width: 480px) {
+          table {
+            min-width: 300px;
+            font-size: 11.5px;
+          }
+          th, td {
+            padding: 6px 2px;
+          }
+        }
+        .btn-back {
+          margin-top: 10px;
+          margin-bottom: 10px;
+          background: #f3f4f6;
+          border: none;
+          border-radius: 10px;
+          padding: 6px 16px;
+          color: #2563eb;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .btn-back:hover {
+          background: #e0e7ef;
+        }
+      `}</style>
+
       <h2>Jugadores del equipo {teamName}</h2>
       {message && <p>{message}</p>}
 
       {editId !== null && (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-player-edit">
           <input
             type="text"
             placeholder="Nombre"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-          /><br />
+          />
           <input
             type="text"
             placeholder="Cédula"
@@ -151,24 +237,26 @@ export default function TeamPlayers() {
                 setForm({ ...form, cedula: value });
               }
             }}
-          /><br />
+          />
           <input
             type="number"
             placeholder="Dorsal"
             value={form.dorsal}
-            onChange={(e) => setForm({ ...form, dorsal: parseInt(e.target.value) })}
-          /><br />
+            onChange={(e) => setForm({ ...form, dorsal: parseInt(e.target.value) || 0 })}
+          />
           <input
             type="text"
             placeholder="Carrera"
             value={form.carrera}
             onChange={(e) => setForm({ ...form, carrera: e.target.value })}
-          /><br />
-          <button className="btn-tertiary" type="submit">Actualizar</button>
-          <button type="button" onClick={() => {
-            setForm({ name: "", cedula: "", dorsal: 0, carrera: "" });
-            setEditId(null);
-          }} className="btn-neutral">Cancelar</button>
+          />
+          <div style={{display: "flex", gap: 8}}>
+            <button className="btn-tertiary" type="submit">Actualizar</button>
+            <button type="button" onClick={() => {
+              setForm({ name: "", cedula: "", dorsal: 0, carrera: "" });
+              setEditId(null);
+            }} className="btn-neutral">Cancelar</button>
+          </div>
         </form>
       )}
 
@@ -178,27 +266,29 @@ export default function TeamPlayers() {
 
       <hr />
       <h3>Lista de jugadores</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th><th>Cédula</th><th>Dorsal</th><th>Carrera</th><th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {players.sort((a, b) => a.id - b.id).map((p: Player) => (
-            <tr key={p.id}>
-              <td>{p.name}</td>
-              <td>{p.cedula}</td>
-              <td>{p.dorsal}</td>
-              <td>{p.carrera}</td>
-              <td>
-                <button className="btn-primary btn-sm" onClick={() => handleEdit(p)}>Editar</button>
-                <button className="btn-secondary btn-sm" onClick={() => handleDelete(p.id)}>Eliminar</button>
-              </td>
+      <div style={{overflowX: "auto"}}>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th><th>Cédula</th><th>Dorsal</th><th>Carrera</th><th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {players.sort((a, b) => a.id - b.id).map((p: Player) => (
+              <tr key={p.id}>
+                <td>{p.name}</td>
+                <td>{p.cedula}</td>
+                <td>{p.dorsal}</td>
+                <td>{p.carrera}</td>
+                <td>
+                  <button className="btn-primary btn-sm padding: 2px" onClick={() => handleEdit(p)}>Editar</button>
+                  <button className="btn-secondary btn-sm" onClick={() => handleDelete(p.id)}>Eliminar</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         onClose={() => setConfirmDialog({ isOpen: false })}

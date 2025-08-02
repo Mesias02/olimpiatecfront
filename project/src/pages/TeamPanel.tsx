@@ -218,21 +218,90 @@ export default function TeamPanel() {
   ];
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '24px' 
-      }}>
-        <h1 style={{ 
-          fontSize: '2rem', 
-          fontWeight: 'bold', 
-          color: '#ffffff',
-          margin: 0 
-        }}>
-          ⚽ Gestión de Equipos
-        </h1>
+    <div className="team-panel-responsive">
+      <style>{`
+        .team-panel-responsive {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 24px;
+        }
+        .team-panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .team-panel-header h1 {
+          font-size: 2rem;
+          font-weight: bold;
+          color: #fff;
+          margin: 0;
+        }
+        .team-panel-modal-form {
+          display: grid;
+          gap: 16px;
+        }
+        @media (max-width: 700px) {
+          .team-panel-header h1 {
+            font-size: 1.4rem;
+          }
+          .team-panel-responsive {
+            padding: 12px;
+          }
+        }
+        /* TABLA responsive */
+        .team-panel-table-container {
+          width: 100%;
+          overflow-x: auto;
+          background: rgba(255,255,255,0.97);
+          border-radius: 14px;
+          box-shadow: 0 2px 12px #0001;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 600px;
+        }
+        th, td {
+          padding: 10px 12px;
+          text-align: center;
+        }
+        th {
+          background: #e5e7eb;
+          font-weight: bold;
+          color: #22223b;
+        }
+        tr:nth-child(even) td {
+          background: #f8fafc;
+        }
+        @media (max-width: 700px) {
+          .team-panel-table-container {
+            border-radius: 7px;
+          }
+          table {
+            min-width: 480px;
+            font-size: 13px;
+          }
+        }
+        @media (max-width: 500px) {
+          .team-panel-table-container {
+            box-shadow: none;
+            background: transparent;
+          }
+          table {
+            min-width: 320px;
+            font-size: 11.5px;
+          }
+          th, td {
+            padding: 8px 4px;
+          }
+        }
+      `}</style>
+
+      <div className="team-panel-header">
+        <h1>⚽ Gestión de Equipos</h1>
         {!showModal && isAdmin && (
           <button 
             className="btn-primary"
@@ -273,7 +342,7 @@ export default function TeamPanel() {
         title={editId ? "Editar Equipo" : "Crear Equipo"}
         size="md"
       >
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '16px' }}>
+        <form onSubmit={handleSubmit} className="team-panel-modal-form">
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151' }}>
               Nombre del equipo
@@ -376,14 +445,17 @@ export default function TeamPanel() {
             onClear={clearFilters}
           />
 
-          <DataTable
-            data={filteredTeams}
-            columns={columns}
-            loading={loading}
-            emptyMessage="No se encontraron equipos"
-            hoverable
-            striped
-          />
+          <div className="team-panel-table-container">
+            {/* Si DataTable no es responsive, reemplaza el render por una tabla estándar aquí */}
+            <DataTable
+              data={filteredTeams}
+              columns={columns}
+              loading={loading}
+              emptyMessage="No se encontraron equipos"
+              hoverable
+              striped
+            />
+          </div>
         </>
       )}
     </div>

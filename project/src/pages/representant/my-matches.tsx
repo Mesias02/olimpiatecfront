@@ -6,7 +6,6 @@ import { getMyReportForMatch } from "../../api/matchreport";
 import StatusBadge from "../../components/StatusBadge";
 import DataTable from "../../components/DataTable";
 
-// Etiquetas legibles
 const ESTADO_LABELS: Record<string, string> = {
   PENDING: "Pendiente",
   COMPLETED: "Jugado",
@@ -24,7 +23,6 @@ export default function MyMatches() {
   const token = localStorage.getItem("token") || "";
   const navigate = useNavigate();
 
-  // Traer datos y filtrar solo mis partidos
   useEffect(() => {
     async function fetchData() {
       try {
@@ -35,11 +33,9 @@ export default function MyMatches() {
         const myMatches = allMatches.filter(
           (m) => m.homeTeamName === myTeam.name || m.awayTeamName === myTeam.name
         );
-
-        // Más recientes primero
         myMatches.sort((a, b) => b.date.localeCompare(a.date));
         setMatches(myMatches);
-      } catch (e: any) {
+      } catch {
         setError("Error cargando partidos.");
       } finally {
         setLoading(false);
@@ -48,7 +44,6 @@ export default function MyMatches() {
     fetchData();
   }, [token]);
 
-  // Saber si ya hay reporte para cada partido
   useEffect(() => {
     async function fetchReports() {
       const reportStates: { [matchId: number]: boolean } = {};
@@ -67,7 +62,6 @@ export default function MyMatches() {
     }
   }, [matches, token]);
 
-  // Filtro y búsqueda
   const filteredMatches = matches.filter((match) => {
     const normalized = (s: string) => (s || "").toLowerCase();
     const statusMatch =
@@ -82,7 +76,6 @@ export default function MyMatches() {
     return statusMatch && (!searchTerm || search);
   });
 
-  // Columnas para DataTable
   const columns = [
     {
       key: "date",
@@ -129,6 +122,7 @@ export default function MyMatches() {
             <button
               className="btn-tertiary btn-sm"
               onClick={() => navigate(`/my-matches/${match.id}/report`)}
+              style={{ minWidth: 120 }}
             >
               ✏️ Editar Alineación
             </button>
@@ -136,6 +130,7 @@ export default function MyMatches() {
             <button
               className="btn-primary btn-sm"
               onClick={() => navigate(`/my-matches/${match.id}/report`)}
+              style={{ minWidth: 120 }}
             >
               📝 Registrar Alineación
             </button>
@@ -146,67 +141,106 @@ export default function MyMatches() {
   ];
 
   return (
-    <div
-      style={{
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)",
+      padding: "40px 0"
+    }}>
+      <div style={{
         maxWidth: 1100,
-        margin: "40px auto 0 auto",
+        margin: "0 auto",
         padding: "0 20px",
-      }}
-    >
-      <div
-        className="text-3xl font-bold mb-8 text-white text-center drop-shadow"
-        style={{ textShadow: "0 2px 10px #1e40af33" }}
-      >
-        Mis Partidos
-      </div>
-
-      {/* Filtros */}
-      <div className="flex flex-col md:flex-row gap-3 mb-6 items-center justify-between">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-80"
-          placeholder="Por equipo, lugar, fecha, estado..."
-        />
-        <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-60"
+      }}>
+        <div
+          className="text-3xl font-bold mb-8 text-white text-center drop-shadow"
+          style={{
+            textShadow: "0 2px 10px #1e40af33",
+            letterSpacing: ".5px",
+          }}
         >
-          <option value="">Todos los estados</option>
-          <option value="PENDING">Pendiente</option>
-          <option value="COMPLETED">Jugado</option>
-          <option value="CANCELLED">Cancelado</option>
-        </select>
-      <button
-  className="btn-primary btn-sm"
-  style={{ minWidth: 130 }}
-  onClick={() => {
-    setSearchTerm("");
-    setStatusFilter("");
-  }}
-  type="button"
->
-  Limpiar filtros
-</button>
-
-      </div>
-
-      {/* Tabla bonita tipo panel */}
-      <DataTable
-        data={filteredMatches}
-        columns={columns}
-        loading={loading}
-        emptyMessage="No se encontraron partidos"
-        hoverable
-        striped
-      />
-      {error && (
-        <div className="text-center text-red-600 mt-4">
-          {error}
+          Mis Partidos
         </div>
-      )}
+
+        {/* FILTROS PANEL */}
+        <div
+          className="flex flex-col md:flex-row gap-3 mb-6 items-center justify-between"
+          style={{
+            background: "rgba(255,255,255,0.95)",
+            borderRadius: 16,
+            boxShadow: "0 2px 8px #0002",
+            padding: 20,
+            marginBottom: 40,
+          }}
+        >
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 w-full md:w-80"
+            style={{ fontSize: 16, background: "#f1f5f9" }}
+            placeholder="Buscar equipo, lugar, fecha, estado..."
+          />
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 w-full md:w-60"
+            style={{ fontSize: 16, background: "#f1f5f9" }}
+          >
+            <option value="">Todos los estados</option>
+            <option value="PENDING">Pendiente</option>
+            <option value="COMPLETED">Jugado</option>
+            <option value="CANCELLED">Cancelado</option>
+          </select>
+          <button
+            className="btn-primary btn-sm"
+            style={{
+              minWidth: 130,
+              fontWeight: 600,
+              background: "#2563eb",
+              color: "#fff",
+              borderRadius: 8,
+              border: "none",
+              padding: "8px 20px",
+              boxShadow: "0 2px 6px #2563eb22"
+            }}
+            onClick={() => {
+              setSearchTerm("");
+              setStatusFilter("");
+            }}
+            type="button"
+          >
+            Limpiar filtros
+          </button>
+        </div>
+
+        {/* TABLA */}
+        <div style={{
+          background: "rgba(255,255,255,0.97)",
+          borderRadius: 18,
+          boxShadow: "0 4px 24px #0002",
+          padding: "30px 0",
+          overflowX: "auto"
+        }}>
+          <div style={{
+            minWidth: 900,
+            padding: "0 24px"
+          }}>
+            <DataTable
+              data={filteredMatches}
+              columns={columns}
+              loading={loading}
+              emptyMessage="No se encontraron partidos"
+              hoverable
+              striped
+            />
+            {error && (
+              <div className="text-center text-red-600 mt-4">
+                {error}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

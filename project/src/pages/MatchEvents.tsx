@@ -5,14 +5,14 @@ import {
   createMatchEvent,
   updateMatchEvent,
   deleteMatchEvent,
-  MatchEventResponseDTO
+  MatchEventResponseDTO,
 } from "../api/matchEvents";
 import { getPlayersByTeam } from "../api/players";
 import { getMatchById, finishMatch, recalculateMatchScore } from "../api/matches";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
-import ConfirmDialog from "../components/ConfirmDialog"; // ← Importar el dialog
+import ConfirmDialog from "../components/ConfirmDialog";
 
 interface Player {
   id: number;
@@ -31,34 +31,35 @@ export default function MatchEvents() {
   const token = localStorage.getItem("token")!;
   const role = token ? jwtDecode<TokenPayload>(token).role : null;
   const navigate = useNavigate();
+
   const [events, setEvents] = useState<MatchEventResponseDTO[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [homeTeamName, setHomeTeamName] = useState("");
   const [awayTeamName, setAwayTeamName] = useState("");
   const [matchStatus, setMatchStatus] = useState<string>("PENDING");
   const [validated, setValidated] = useState<boolean>(false);
+
   const [form, setForm] = useState({
     playerId: 0,
     minute: 0,
     type: "GOL",
-    detail: ""
+    detail: "",
   });
 
   const [editingEventId, setEditingEventId] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState<any>({
+  const [editForm, setEditForm] = useState({
     playerId: 0,
     minute: 0,
     type: "GOL",
-    detail: ""
+    detail: "",
   });
 
-  // Estado para ConfirmDialog
   const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; eventId?: number }>({ isOpen: false });
 
   const loadData = async () => {
     const [match, eventData] = await Promise.all([
       getMatchById(matchId, token),
-      getMatchEvents(matchId, token)
+      getMatchEvents(matchId, token),
     ]);
 
     setEvents(eventData);
@@ -69,15 +70,13 @@ export default function MatchEvents() {
 
     const [home, away] = await Promise.all([
       getPlayersByTeam(match.homeTeamId, token),
-      getPlayersByTeam(match.awayTeamId, token)
+      getPlayersByTeam(match.awayTeamId, token),
     ]);
 
-    const playersWithTeam: Player[] = [
+    setPlayers([
       ...home.map((p: any) => ({ ...p, teamName: match.homeTeamName })),
-      ...away.map((p: any) => ({ ...p, teamName: match.awayTeamName }))
-    ];
-
-    setPlayers(playersWithTeam);
+      ...away.map((p: any) => ({ ...p, teamName: match.awayTeamName })),
+    ]);
   };
 
   useEffect(() => {
@@ -86,13 +85,17 @@ export default function MatchEvents() {
   }, []);
 
   const handleSubmit = async () => {
+    if (!form.playerId || form.minute <= 0) {
+      toast.error("Selecciona jugador y minuto válido.");
+      return;
+    }
     await createMatchEvent(
       {
         matchId,
         playerId: form.playerId,
         minute: form.minute,
         type: form.type,
-        detail: form.detail
+        detail: form.detail,
       },
       token
     );
@@ -113,14 +116,18 @@ export default function MatchEvents() {
   const handleEditEvent = (e: MatchEventResponseDTO) => {
     setEditingEventId(e.id);
     setEditForm({
-      playerId: players.find(p => p.name === e.playerName)?.id ?? 0,
+      playerId: players.find((p) => p.name === e.playerName)?.id ?? 0,
       minute: e.minute,
       type: e.type,
-      detail: e.detail || ""
+      detail: e.detail || "",
     });
   };
 
   const handleSaveEdit = async () => {
+    if (!editForm.playerId || editForm.minute <= 0) {
+      toast.error("Selecciona jugador y minuto válido.");
+      return;
+    }
     await updateMatchEvent(
       editingEventId!,
       {
@@ -128,7 +135,7 @@ export default function MatchEvents() {
         playerId: editForm.playerId,
         minute: editForm.minute,
         type: editForm.type,
-        detail: editForm.detail
+        detail: editForm.detail,
       },
       token
     );
@@ -138,7 +145,6 @@ export default function MatchEvents() {
     loadData();
   };
 
-  // Usar ConfirmDialog para borrar
   const handleDeleteEvent = (eventId: number) => {
     setConfirmDialog({ isOpen: true, eventId });
   };
@@ -152,13 +158,18 @@ export default function MatchEvents() {
     loadData();
   };
 
-  const canEditOrDelete = () => role === "ADMIN" || (role === "MESA" && matchStatus === "PENDING");
+  const canEditOrDelete = () =>
+    role === "ADMIN" || (role === "MESA" && matchStatus === "PENDING");
 
-  const allowForm = matchStatus === "PENDING" || (matchStatus === "COMPLETED" && !validated);
+  const allowForm =
+    matchStatus === "PENDING" || (matchStatus === "COMPLETED" && !validated);
 
   const countEvents = (team: string, type: string, detail?: string) => {
     return events.filter(
-      e => e.teamName === team && e.type === type && (!detail || e.detail?.toUpperCase() === detail.toUpperCase())
+      (e) =>
+        e.teamName === team &&
+        e.type === type &&
+        (!detail || e.detail?.toUpperCase() === detail.toUpperCase())
     ).length;
   };
 
@@ -169,119 +180,501 @@ export default function MatchEvents() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-bold text-center text-white mb-6">Eventos del Partido #{matchId}</h2>
+    <main
+      style={{
+        maxWidth: 960,
+        margin: "20px auto",
+        padding: 16,
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        color: "#eee",
+      }}
+    >
+      <h2 style={{ textAlign: "center", marginBottom: 24, fontWeight: "700", fontSize: 24 }}>
+        Eventos del Partido #{matchId}
+      </h2>
 
       {allowForm && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          {[homeTeamName, awayTeamName].map((teamName, idx) => (
-            <div key={idx} className="p-4 border rounded shadow">
-              <h3 className="text-white font-semibold mb-3 text-center text-blue-700">
+        <section
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 20,
+            marginBottom: 40,
+            justifyContent: "center",
+          }}
+        >
+          {[homeTeamName, awayTeamName].filter(teamName => teamName && teamName.trim() !== "")
+  .map((teamName, idx) => (
+            <article
+              key={teamName}
+              style={{
+                flex: "1 1 300px",
+                backgroundColor: idx === 0 ? "#1e40af" : "#991b1b",
+                borderRadius: 12,
+                padding: 20,
+                boxShadow: "0 8px 20px rgba(0,0,0,0.5)",
+                display: "flex",
+                flexDirection: "column",
+                transition: "transform 0.2s ease",
+                cursor: "default",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.03)")}
+              onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              <h3
+                style={{
+                  textAlign: "center",
+                  fontWeight: "700",
+                  fontSize: 20,
+                  marginBottom: 16,
+                  color: "#fff",
+                  textShadow: "0 0 8px rgba(0,0,0,0.5)",
+                }}
+              >
                 Registrar Evento - {teamName}
               </h3>
-              <div className="flex flex-col gap-3">
-                <select className="border rounded px-3 py-2" value={form.playerId} onChange={e => setForm({ ...form, playerId: parseInt(e.target.value) })}>
-                  <option value={0}>-- Selecciona jugador --</option>
-                  {players.filter(p => p.teamName === teamName).map(p => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
+
+              <select
+                style={{
+                  width: "100%",
+                  padding: 10,
+                  marginBottom: 14,
+                  borderRadius: 8,
+                  border: "1.5px solid #ddd",
+                  fontSize: 16,
+                  outline: "none",
+                  cursor: "pointer",
+                  transition: "border-color 0.2s ease",
+                }}
+                value={form.playerId}
+                onChange={(e) => setForm({ ...form, playerId: parseInt(e.target.value) })}
+                onFocus={e => (e.currentTarget.style.borderColor = "#60a5fa")}
+                onBlur={e => (e.currentTarget.style.borderColor = "#ddd")}
+              >
+                <option value={0}>-- Selecciona jugador --</option>
+                {players
+                  .filter((p) => p.teamName === teamName)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
                   ))}
+              </select>
+
+              <input
+                type="number"
+                min={0}
+                placeholder="Minuto"
+                style={{
+                  width: "100%",
+                  padding: 10,
+                  marginBottom: 14,
+                  borderRadius: 8,
+                  border: "1.5px solid #ddd",
+                  fontSize: 16,
+                  outline: "none",
+                  transition: "border-color 0.2s ease",
+                }}
+                value={form.minute}
+                onChange={(e) => setForm({ ...form, minute: parseInt(e.target.value) })}
+                onFocus={e => (e.currentTarget.style.borderColor = "#60a5fa")}
+                onBlur={e => (e.currentTarget.style.borderColor = "#ddd")}
+              />
+
+              <select
+                style={{
+                  width: "100%",
+                  padding: 10,
+                  marginBottom: 14,
+                  borderRadius: 8,
+                  border: "1.5px solid #ddd",
+                  fontSize: 16,
+                  cursor: "pointer",
+                  transition: "border-color 0.2s ease",
+                }}
+                value={form.type}
+                onChange={(e) => setForm({ ...form, type: e.target.value })}
+                onFocus={e => (e.currentTarget.style.borderColor = "#60a5fa")}
+                onBlur={e => (e.currentTarget.style.borderColor = "#ddd")}
+              >
+                <option value="GOL">Gol</option>
+                <option value="TARJETA">Tarjeta</option>
+              </select>
+
+              {form.type === "TARJETA" && (
+                <select
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    marginBottom: 14,
+                    borderRadius: 8,
+                    border: "1.5px solid #ddd",
+                    fontSize: 16,
+                    cursor: "pointer",
+                    transition: "border-color 0.2s ease",
+                  }}
+                  value={form.detail}
+                  onChange={(e) => setForm({ ...form, detail: e.target.value })}
+                  onFocus={e => (e.currentTarget.style.borderColor = "#60a5fa")}
+                  onBlur={e => (e.currentTarget.style.borderColor = "#ddd")}
+                >
+                  <option value="">-- Tipo tarjeta --</option>
+                  <option value="AMARILLA">Amarilla</option>
+                  <option value="ROJA">Roja</option>
                 </select>
+              )}
 
-                <input className="border rounded px-3 py-2" type="number" value={form.minute} min={0} placeholder="Minuto"
-                  onChange={e => setForm({ ...form, minute: parseInt(e.target.value) })} />
-
-                <select className="border rounded px-3 py-2" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
-                  <option value="GOL">Gol</option>
-                  <option value="TARJETA">Tarjeta</option>
-                </select>
-
-                {form.type === "TARJETA" && (
-                  <select className="border rounded px-3 py-2" value={form.detail} onChange={e => setForm({ ...form, detail: e.target.value })}>
-                    <option value="">-- Tipo tarjeta --</option>
-                    <option value="AMARILLA">Amarilla</option>
-                    <option value="ROJA">Roja</option>
-                  </select>
-                )}
-
-                <button onClick={handleSubmit} className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                  Guardar Evento
-                </button>
-                <button onClick={handleSubmit} className="btn-primary mt-2">
-                  💾 Guardar Evento
-                </button>
-              </div>
-            </div>
+              <button
+                disabled={form.playerId === 0 || form.minute <= 0}
+                onClick={handleSubmit}
+                style={{
+                  marginTop: "auto",
+                  padding: "14px 0",
+                  backgroundColor:
+                    form.playerId === 0 || form.minute <= 0 ? "#93c5fd" : "#3b82f6",
+                  color: "white",
+                  fontWeight: "700",
+                  fontSize: 18,
+                  borderRadius: 10,
+                  cursor:
+                    form.playerId === 0 || form.minute <= 0
+                      ? "not-allowed"
+                      : "pointer",
+                  transition: "background-color 0.3s ease",
+                  border: "none",
+                  boxShadow:
+                    form.playerId === 0 || form.minute <= 0
+                      ? "none"
+                      : "0 6px 12px rgba(59, 130, 246, 0.6)",
+                }}
+                onMouseEnter={e => {
+                  if (!(form.playerId === 0 || form.minute <= 0)) {
+                    e.currentTarget.style.backgroundColor = "#2563eb";
+                    e.currentTarget.style.boxShadow = "0 8px 16px rgba(37, 99, 235, 0.7)";
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!(form.playerId === 0 || form.minute <= 0)) {
+                    e.currentTarget.style.backgroundColor = "#3b82f6";
+                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(59, 130, 246, 0.6)";
+                  }
+                }}
+              >
+                Guardar Evento
+              </button>
+            </article>
           ))}
-        </div>
+        </section>
       )}
 
       {allowForm && (
-        <div className="text-center mb-8">
-          <button onClick={handleFinishMatch} className="btn-tertiary">
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <button
+            onClick={handleFinishMatch}
+            style={{
+              padding: "14px 28px",
+              backgroundColor: "#10b981",
+              border: "none",
+              borderRadius: 12,
+              color: "white",
+              fontWeight: "700",
+              fontSize: 20,
+              cursor: "pointer",
+              transition: "background-color 0.3s ease",
+              boxShadow: "0 6px 12px rgba(16, 185, 129, 0.6)",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#059669")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#10b981")}
+          >
             🏁 Finalizar Partido
           </button>
         </div>
       )}
 
-      <section>
-        <h3 className="text-white font-semibold mb-3">Eventos Registrados</h3>
-        <div className="grid text-white grid-cols-2 gap-6">
-          {[homeTeamName, awayTeamName].map((teamName, idx) => (
-            <div key={idx}>
-              <h4 className={`font-bold mb-2 ${idx === 0 ? "text-blue-700" : "text-red-700"}`}>{teamName}</h4>
-              <div className="mb-2 text-sm">
-                ⚽ {countEvents(teamName, "GOL")} &nbsp;&nbsp;
-                🟨 {countEvents(teamName, "TARJETA", "AMARILLA")} &nbsp;&nbsp;
-                🟥 {countEvents(teamName, "TARJETA", "ROJA")}
-              </div>
-              <ul className="list-disc list-inside text-white">
-                {events.filter(e => e.teamName === teamName).map(e =>
+      <h3
+        style={{
+          color: "#eee",
+          marginBottom: 20,
+          fontWeight: "700",
+          fontSize: 24,
+          borderBottom: "2px solid #eee",
+          paddingBottom: 6,
+        }}
+      >
+        Eventos Registrados
+      </h3>
+
+      <section
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 20,
+          marginBottom: 40,
+          justifyContent: "center",
+        }}
+      >
+        {[homeTeamName, awayTeamName].map((teamName, idx) => (
+          <article
+            key={teamName}
+            style={{
+              flex: "1 1 320px",
+              backgroundColor: idx === 0 ? "#1e40af" : "#991b1b",
+              borderRadius: 12,
+              padding: 20,
+              boxShadow: "0 8px 20px rgba(0,0,0,0.5)",
+              color: "white",
+              display: "flex",
+              flexDirection: "column",
+              maxHeight: 430,
+              overflowY: "auto",
+            }}
+          >
+            <h4
+              style={{
+                marginBottom: 14,
+                fontWeight: "700",
+                fontSize: 20,
+                textAlign: "center",
+                borderBottom: "1px solid rgba(255,255,255,0.3)",
+                paddingBottom: 10,
+              }}
+            >
+              {teamName}
+            </h4>
+
+            <div
+              style={{
+                marginBottom: 24,
+                fontSize: 16,
+                display: "flex",
+                justifyContent: "space-around",
+                fontWeight: "600",
+              }}
+            >
+              <span>⚽ {countEvents(teamName, "GOL")}</span>
+              <span>🟨 {countEvents(teamName, "TARJETA", "AMARILLA")}</span>
+              <span>🟥 {countEvents(teamName, "TARJETA", "ROJA")}</span>
+            </div>
+
+            <ul
+              style={{
+                listStyleType: "none",
+                paddingLeft: 0,
+                margin: 0,
+                overflowY: "auto",
+                flexGrow: 1,
+                fontSize: 17,
+              }}
+            >
+              {events
+                .filter((e) => e.teamName === teamName)
+                .map((e) =>
                   editingEventId === e.id ? (
-                    <li key={e.id}>
-                      <select className="border rounded px-2 py-1 mr-1" value={editForm.playerId} onChange={ev => setEditForm({ ...editForm, playerId: parseInt(ev.target.value) })}>
+                    <li
+                      key={e.id}
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 10,
+                        marginBottom: 16,
+                      }}
+                    >
+                      <select
+                        style={{
+                          flex: "1 1 140px",
+                          padding: 10,
+                          borderRadius: 8,
+                          border: "none",
+                          fontSize: 16,
+                          cursor: "pointer",
+                        }}
+                        value={editForm.playerId}
+                        onChange={(ev) =>
+                          setEditForm({
+                            ...editForm,
+                            playerId: parseInt(ev.target.value),
+                          })
+                        }
+                      >
                         <option value={0}>-- Jugador --</option>
-                        {players.filter(p => p.teamName === teamName).map(p => (
-                          <option key={p.id} value={p.id}>{p.name}</option>
-                        ))}
+                        {players
+                          .filter((p) => p.teamName === teamName)
+                          .map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
                       </select>
-                      <input className="border rounded px-2 py-1 mr-1" type="number" min={0} value={editForm.minute}
-                        onChange={ev => setEditForm({ ...editForm, minute: parseInt(ev.target.value) })} style={{ width: 50 }} />
-                      <select className="border rounded px-2 py-1 mr-1" value={editForm.type} onChange={ev => setEditForm({ ...editForm, type: ev.target.value })}>
+
+                      <input
+                        type="number"
+                        min={0}
+                        style={{
+                          width: 70,
+                          padding: 10,
+                          borderRadius: 8,
+                          border: "none",
+                          fontSize: 16,
+                        }}
+                        value={editForm.minute}
+                        onChange={(ev) =>
+                          setEditForm({
+                            ...editForm,
+                            minute: parseInt(ev.target.value),
+                          })
+                        }
+                      />
+
+                      <select
+                        style={{
+                          flex: "1 1 120px",
+                          padding: 10,
+                          borderRadius: 8,
+                          border: "none",
+                          fontSize: 16,
+                          cursor: "pointer",
+                        }}
+                        value={editForm.type}
+                        onChange={(ev) =>
+                          setEditForm({ ...editForm, type: ev.target.value })
+                        }
+                      >
                         <option value="GOL">Gol</option>
                         <option value="TARJETA">Tarjeta</option>
                       </select>
+
                       {editForm.type === "TARJETA" && (
-                        <select className="border rounded px-2 py-1 mr-1" value={editForm.detail} onChange={ev => setEditForm({ ...editForm, detail: ev.target.value })}>
+                        <select
+                          style={{
+                            flex: "1 1 120px",
+                            padding: 10,
+                            borderRadius: 8,
+                            border: "none",
+                            fontSize: 16,
+                            cursor: "pointer",
+                          }}
+                          value={editForm.detail}
+                          onChange={(ev) =>
+                            setEditForm({ ...editForm, detail: ev.target.value })
+                          }
+                        >
                           <option value="">-- Tipo tarjeta --</option>
                           <option value="AMARILLA">Amarilla</option>
                           <option value="ROJA">Roja</option>
                         </select>
                       )}
-                      <button className="bg-green-100 hover:bg-green-200 text-green-800 px-2 py-1 rounded mr-1" onClick={handleSaveEdit}>Guardar</button>
-                      <button className="bg-red-100 hover:bg-red-200 text-red-800 px-2 py-1 rounded" onClick={() => setEditingEventId(null)}>Cancelar</button>
+
+                      <button
+                        style={{
+                          padding: "10px 20px",
+                          backgroundColor: "#22c55e",
+                          border: "none",
+                          borderRadius: 8,
+                          color: "white",
+                          cursor: "pointer",
+                          fontWeight: "700",
+                          transition: "background-color 0.3s ease",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#16a34a")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#22c55e")
+                        }
+                        onClick={handleSaveEdit}
+                      >
+                        Guardar
+                      </button>
+                      <button
+                        style={{
+                          padding: "10px 20px",
+                          backgroundColor: "#ef4444",
+                          border: "none",
+                          borderRadius: 8,
+                          color: "white",
+                          cursor: "pointer",
+                          fontWeight: "700",
+                          transition: "background-color 0.3s ease",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#dc2626")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#ef4444")
+                        }
+                        onClick={() => setEditingEventId(null)}
+                      >
+                        Cancelar
+                      </button>
                     </li>
                   ) : (
-                    <li key={e.id}>
-                      {renderIcon(e)} {e.minute}' - {e.type} {e.detail && `(${e.detail})`} - {e.playerName}
+                    <li
+                      key={e.id}
+                      style={{
+                        marginBottom: 10,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: 18 }}>
+                        {renderIcon(e)} {e.minute}' - {e.type}{" "}
+                        {e.detail && `(${e.detail})`} - {e.playerName}
+                      </span>
                       {canEditOrDelete() && (
-                        <div className="flex gap-2">
-  <button className="btn-primary btn-sm" onClick={() => handleEditEvent(e)}>
-    Editar
-  </button>
-  <button className="btn-secondary btn-sm" onClick={() => handleDeleteEvent(e.id)}>
-    Eliminar
-  </button>
-</div>
-
+                        <div style={{ display: "flex", gap: 10 }}>
+                          <button
+                            onClick={() => handleEditEvent(e)}
+                            style={{
+                              backgroundColor: "#3b82f6",
+                              border: "none",
+                              borderRadius: 8,
+                              color: "white",
+                              padding: "8px 16px",
+                              cursor: "pointer",
+                              fontWeight: "700",
+                              transition: "background-color 0.3s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.backgroundColor = "#2563eb")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.backgroundColor = "#3b82f6")
+                            }
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(e.id)}
+                            style={{
+                              backgroundColor: "#ef4444",
+                              border: "none",
+                              borderRadius: 8,
+                              color: "white",
+                              padding: "8px 16px",
+                              cursor: "pointer",
+                              fontWeight: "700",
+                              transition: "background-color 0.3s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.backgroundColor = "#dc2626")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.backgroundColor = "#ef4444")
+                            }
+                          >
+                            Eliminar
+                          </button>
+                        </div>
                       )}
                     </li>
                   )
                 )}
-              </ul>
-            </div>
-          ))}
-        </div>
+            </ul>
+          </article>
+        ))}
       </section>
+
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
         onClose={() => setConfirmDialog({ isOpen: false })}
@@ -293,6 +686,6 @@ export default function MatchEvents() {
         type="danger"
         icon="🗑️"
       />
-    </div>
+    </main>
   );
 }

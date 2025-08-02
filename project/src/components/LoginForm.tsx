@@ -67,7 +67,6 @@ export default function LoginForm() {
                 required
                 className="form-input"
               />
-              <span className="input-icon">📧</span>
             </div>
           </div>
 

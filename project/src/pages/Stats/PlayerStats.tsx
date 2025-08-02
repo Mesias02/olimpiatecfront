@@ -39,7 +39,7 @@ export default function PlayerStats({ playerId }: PlayerStatsProps) {
   if (!stats) return <p>Estadísticas no disponibles.</p>;
 
   return (
-    <div style={{ border: "1px solid #ccc", padding: 16, borderRadius: 8, marginTop: 16 }}>
+    <div style={{ border: "1px solid #ccc", padding: 16, borderRadius: 8, marginTop: 16  } }>
       <h2>Estadísticas de {stats.playerName}</h2>
       <p><strong>Equipo:</strong> {stats.teamName}</p>
       <p><strong>Goles:</strong> {stats.goals}</p>
