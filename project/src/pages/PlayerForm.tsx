@@ -222,30 +222,45 @@ export default function PlayerForm() {
       />
 
       {/* Tabla filtrada */}
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Cédula</th>
-            <th>Dorsal</th>
-            <th>Carrera</th>
-            <th>Equipo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPlayers.map((p, i) => (
-            <tr key={p.id}>
-              <td>{i + 1}</td>
-              <td>{p.name}</td>
-              <td>{p.cedula}</td>
-              <td>{p.dorsal}</td>
-              <td>{p.carrera}</td>
-              <td>{p.team?.name || "Sin equipo"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+     {/* Tabla filtrada */}
+<div style={{
+  width: "100%",
+  overflowX: "auto",
+  marginBottom: 24,
+  borderRadius: 12,
+  boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+  background: "#fff"
+}}>
+  <table style={{
+    minWidth: 650,
+    width: "100%",
+    borderCollapse: "collapse"
+  }}>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Cédula</th>
+        <th>Dorsal</th>
+        <th>Carrera</th>
+        <th>Equipo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredPlayers.map((p, i) => (
+        <tr key={p.id}>
+          <td>{i + 1}</td>
+          <td>{p.name}</td>
+          <td>{p.cedula}</td>
+          <td>{p.dorsal}</td>
+          <td>{p.carrera}</td>
+          <td>{p.team?.name || "Sin equipo"}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
     </main>
   );
 }

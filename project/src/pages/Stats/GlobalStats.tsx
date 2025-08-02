@@ -57,112 +57,114 @@ export default function GlobalStats() {
       {/* Tabla de Clasificación */}
       <section>
         <h2>Tabla de Clasificación</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Equipo</th>
-              <th>PJ</th>
-              <th>G</th>
-              <th>E</th>
-              <th>P</th>
-              <th>GF</th>
-              <th>GC</th>
-              <th>DG</th>
-              <th>Pts</th>
-              <th>Últ. 5</th>
-            </tr>
-          </thead>
-          <tbody>
-            {standings.map((team, idx) => (
-              <tr key={idx}>
-                <td>{team.teamName}</td>
-                <td>{team.played}</td>
-                <td>{team.wins}</td>
-                <td>{team.draws}</td>
-                <td>{team.losses}</td>
-                <td>{team.goalsFor}</td>
-                <td>{team.goalsAgainst}</td>
-                <td>{team.goalDifference}</td>
-                <td>{team.points}</td>
-                <td>
-                  {team.last5.map((r, i) => (
-                    <span
-                      key={i}
-                      title={r}
-                      style={{
-                        marginRight: 4,
-                        color:
-                          r === "W" ? "green" : r === "D" ? "gray" : "red"
-                      }}
-                    >
-                      {r === "W" ? "✅" : r === "D" ? "➖" : "❌"}
-                    </span>
-                  ))}
-                </td>
+        <div style={{ overflowX: "auto", width: "100%" }}>
+          <table style={{ minWidth: 700 }}>
+            <thead>
+              <tr>
+                <th>Equipo</th>
+                <th>PJ</th>
+                <th>G</th>
+                <th>E</th>
+                <th>P</th>
+                <th>GF</th>
+                <th>GC</th>
+                <th>DG</th>
+                <th>Pts</th>
+                <th>Últ. 5</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {standings.map((team, idx) => (
+                <tr key={idx}>
+                  <td>{team.teamName}</td>
+                  <td>{team.played}</td>
+                  <td>{team.wins}</td>
+                  <td>{team.draws}</td>
+                  <td>{team.losses}</td>
+                  <td>{team.goalsFor}</td>
+                  <td>{team.goalsAgainst}</td>
+                  <td>{team.goalDifference}</td>
+                  <td>{team.points}</td>
+                  <td>
+                    {team.last5.map((r, i) => (
+                      <span
+                        key={i}
+                        title={r}
+                        style={{
+                          marginRight: 4,
+                          color:
+                            r === "W" ? "green" : r === "D" ? "gray" : "red"
+                        }}
+                      >
+                        {r === "W" ? "✅" : r === "D" ? "➖" : "❌"}
+                      </span>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {/* Top Goleadores */}
       <section>
         <h2>Top Goleadores</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Jugador</th>
-              <th>Equipo</th>
-              <th>Goles</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            {stats.topScorers.map(player => (
-              <tr
-                key={player.playerId}
-                onClick={() => setSelectedPlayerId(player.playerId)}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{player.playerName}</td>
-                <td>{player.teamName}</td>
-                <td>{player.goals}</td>
-
+        <div style={{ overflowX: "auto", width: "100%" }}>
+          <table style={{ minWidth: 400 }}>
+            <thead>
+              <tr>
+                <th>Jugador</th>
+                <th>Equipo</th>
+                <th>Goles</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {stats.topScorers.map(player => (
+                <tr
+                  key={player.playerId}
+                  onClick={() => setSelectedPlayerId(player.playerId)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{player.playerName}</td>
+                  <td>{player.teamName}</td>
+                  <td>{player.goals}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {/* Jugadores con más Tarjetas */}
       <section>
         <h2>Jugadores con más Tarjetas</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Jugador</th>
-              <th>Equipo</th>
-    
-              <th>Amarillas</th>
-              <th>Rojas</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stats.topCards.map(player => (
-              <tr
-                key={player.playerId}
-                onClick={() => setSelectedPlayerId(player.playerId)}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{player.playerName}</td>
-                <td>{player.teamName}</td>
-  
-                <td>{player.yellowCards}</td>
-                <td>{player.redCards}</td>
+        <div style={{ overflowX: "auto", width: "100%" }}>
+          <table style={{ minWidth: 400 }}>
+            <thead>
+              <tr>
+                <th>Jugador</th>
+                <th>Equipo</th>
+                <th>Amarillas</th>
+                <th>Rojas</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {stats.topCards.map(player => (
+                <tr
+                  key={player.playerId}
+                  onClick={() => setSelectedPlayerId(player.playerId)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{player.playerName}</td>
+                  <td>{player.teamName}</td>
+                  <td>{player.yellowCards}</td>
+                  <td>{player.redCards}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {selectedPlayerId && (

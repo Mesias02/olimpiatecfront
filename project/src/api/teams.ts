@@ -1,5 +1,5 @@
 import axios from "axios";
-const API = process.env.REACT_APP_API_URL || "/api";
+const API = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 export const getTeams = async (token: string) => {
   const res = await axios.get(`${API}/teams`, {

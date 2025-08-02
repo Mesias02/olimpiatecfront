@@ -339,72 +339,160 @@ export default function Panel() {
       >
         <div>
           <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '16px' }}>
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <input
-              type="email"
-              placeholder="Correo"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-            <div style={{ position: "relative" }}>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder={editId != null ? "Nueva contraseña (opcional)" : "Contraseña"}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                style={{
-                  position: "absolute",
-                  right: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: 18,
-                  color: "#6b7280"
-                }}
-                tabIndex={-1}
-              >
-                {showPassword ? "🔒" : "🔓"}
-              </button>
-            </div>
+  {/* --- INPUT NOMBRE --- */}
+  <div style={{ position: "relative", maxWidth: 400, width: "100%", margin: "0 auto" }}>
+    <input
+      type="text"
+      placeholder="Nombre"
+      value={form.name}
+      onChange={(e) => setForm({ ...form, name: e.target.value })}
+      style={{
+        width: "100%",
+        paddingRight: 40,
+        fontSize: 16,
+        border: "none",
+        borderBottom: "1px solid #cbd5e1",
+        outline: "none",
+        background: "transparent",
+        boxSizing: "border-box",
+        height: 44,
+      }}
+    />
+    {/* Placeholder para alinear con el campo de contraseña */}
+    <span style={{
+      position: "absolute",
+      right: 8,
+      top: "50%",
+      transform: "translateY(-50%)",
+      width: 32,
+      height: 32,
+      display: "inline-block",
+      opacity: 0
+    }} />
+  </div>
 
-            {form.password && <PasswordChecklist />}
+  {/* --- INPUT EMAIL --- */}
+  <div style={{ position: "relative", maxWidth: 400, width: "100%", margin: "0 auto" }}>
+    <input
+      type="email"
+      placeholder="Correo"
+      value={form.email}
+      onChange={(e) => setForm({ ...form, email: e.target.value })}
+      style={{
+        width: "100%",
+        paddingRight: 40,
+        fontSize: 16,
+        border: "none",
+        borderBottom: "1px solid #cbd5e1",
+        outline: "none",
+        background: "transparent",
+        boxSizing: "border-box",
+        height: 44,
+      }}
+    />
+    {/* Placeholder para alinear con el campo de contraseña */}
+    <span style={{
+      position: "absolute",
+      right: 8,
+      top: "50%",
+      transform: "translateY(-50%)",
+      width: 32,
+      height: 32,
+      display: "inline-block",
+      opacity: 0
+    }} />
+  </div>
 
-            <select
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-            >
-              <option value="ADMIN">ADMIN</option>
-              <option value="JUGADOR">JUGADOR</option>
-              <option value="MESA">MESA</option>
-            </select>
+  {/* --- INPUT CONTRASEÑA CON OJO --- */}
+  <div style={{ position: "relative", maxWidth: 400, width: "100%", margin: "0 auto" }}>
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder={editId != null ? "Nueva contraseña (opcional)" : "Contraseña"}
+      value={form.password}
+      onChange={(e) => setForm({ ...form, password: e.target.value })}
+      style={{
+        width: "100%",
+        paddingRight: 40,
+        fontSize: 16,
+        border: "none",
+        borderBottom: "1px solid #cbd5e1",
+        outline: "none",
+        background: "transparent",
+        boxSizing: "border-box",
+        height: 44,
+      }}
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword((v) => !v)}
+      style={{
+        position: "absolute",
+        right: 8,
+        top: "50%",
+        transform: "translateY(-50%)",
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        width: 32,
+        height: 32,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 2,
+        borderRadius: "50%",
+        padding: 0,
+      }}
+      tabIndex={-1}
+      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+    >
+      <span
+        className="material-icons"
+        style={{
+          fontSize: "1.7rem",
+          color: "#2563eb"
+        }}
+      >
+        {showPassword ? "visibility_off" : "visibility"}
+      </span>
+    </button>
+  </div>
 
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-              <button 
-                className="btn-primary"
-                type="submit"
-              >
-                {editId != null ? "Actualizar Usuario" : "Crear Usuario"}
-              </button>
-              <button 
-                className="btn-neutral"
-                type="button"
-                onClick={() => { setShowModal(false); setEditId(null); }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
+  {form.password && <PasswordChecklist />}
+
+  <select
+    value={form.role}
+    onChange={(e) => setForm({ ...form, role: e.target.value })}
+    style={{
+      maxWidth: 400,
+      margin: "0 auto",
+      height: 44,
+      fontSize: 16,
+      border: "none",
+      borderBottom: "1px solid #cbd5e1",
+      outline: "none",
+      background: "transparent",
+      boxSizing: "border-box",
+    }}
+  >
+    <option value="ADMIN">ADMIN</option>
+    <option value="JUGADOR">JUGADOR</option>
+    <option value="MESA">MESA</option>
+  </select>
+
+  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+    <button className="btn-primary" type="submit">
+      {editId != null ? "Actualizar Usuario" : "Crear Usuario"}
+    </button>
+    <button
+      className="btn-neutral"
+      type="button"
+      onClick={() => { setShowModal(false); setEditId(null); }}
+    >
+      Cancelar
+    </button>
+  </div>
+</form>
+
         </div>
       </Modal>
 

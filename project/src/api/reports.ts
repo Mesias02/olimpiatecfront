@@ -1,5 +1,5 @@
 import axios from "axios";
-const API = process.env.REACT_APP_API_URL || "/api";
+const API = process.env.REACT_APP_API_URL || "http://localhost:8080";
 export interface ReportFilterDTO {
   teamId?: number;
   playerId?: number;

@@ -69,42 +69,44 @@ export default function ResetPasswordForm() {
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 350, margin: "auto" }}>
-      <h2>Restablecer contraseña</h2>
-      <div style={{ position: "relative" }}>
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder="Nueva contraseña"
-          value={newPassword}
-          onChange={e => setNewPassword(e.target.value)}
-          required
-          style={{ width: "100%" }}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword((v) => !v)}
-          style={{
-            position: "absolute",
-            right: 8,
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: 18,
-            color: "#333"
-          }}
-          tabIndex={-1}
-          aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-        >
-          {showPassword ? "🔒" : "🔓"}
+   return (
+    <div className="reset-password-bg">
+      <form className="reset-card" onSubmit={handleSubmit}>
+        <div className="reset-title">
+          <span className="material-icons reset-lock-icon">lock_reset</span>
+          Restablecer contraseña
+        </div>
+
+        <div className="reset-field">
+          <input
+            className="reset-input"
+            type={showPassword ? "text" : "password"}
+            placeholder="Nueva contraseña"
+            value={newPassword}
+            onChange={e => setNewPassword(e.target.value)}
+            required
+          />
+          <button
+            type="button"
+            className="reset-eye"
+            onClick={() => setShowPassword((v) => !v)}
+            tabIndex={-1}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            <span className="material-icons">
+              {showPassword ? "visibility_off" : "visibility"}
+            </span>
+          </button>
+        </div>
+
+        {newPassword && <PasswordChecklist password={newPassword} />}
+
+        <button className="reset-btn" type="submit">
+          Cambiar contraseña
         </button>
-      </div>
-      {newPassword && <PasswordChecklist password={newPassword} />}
-      <button type="submit">Cambiar contraseña</button>
-      {message && <div style={{ color: "green", marginTop: 10 }}>{message}</div>}
-      {error && <div style={{ color: "red", marginTop: 10 }}>{error}</div>}
-    </form>
+        {message && <div className="reset-alert success">{message}</div>}
+        {error && <div className="reset-alert error">{error}</div>}
+      </form>
+    </div>
   );
 }

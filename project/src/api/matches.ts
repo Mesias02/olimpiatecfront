@@ -1,7 +1,7 @@
 import axios from "axios";
 import { MatchEventResponseDTO } from "./matchEvents";
 
-const API = process.env.REACT_APP_API_URL || "/api";
+const API = process.env.REACT_APP_API_URL || "http://localhost:8080";
 export interface MatchDTO {
   id: number;
   homeTeamName: string;

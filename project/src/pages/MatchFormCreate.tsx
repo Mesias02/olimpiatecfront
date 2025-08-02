@@ -217,6 +217,55 @@ export default function MatchManager() {
         .mm-status-pending { background: #fef3c7; color: #92400e; }
         .mm-status-completed { background: #d1fae5; color: #065f46; }
         .mm-status-cancelled { background: #fee2e2; color: #991b1b; }
+        @media (max-width: 768px) {
+  .match-manager-container {
+    padding: 12px 2vw 22px 2vw;
+    max-width: 99vw;
+  }
+  .mm-header {
+    font-size: 1.2rem;
+    margin-bottom: 22px;
+  }
+  .mm-teams-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .mm-card {
+    min-width: unset;
+    padding: 14px 7px;
+  }
+  .mm-fields-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mm-fields-row > div {
+    width: 100%;
+  }
+  .mm-table th, .mm-table td {
+    font-size: 13px;
+    padding: 6px 4px;
+  }
+  .mm-table-container {
+    margin-top: 18px;
+  }
+  input, select {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .mm-header { font-size: 1rem; }
+  .mm-card label { font-size: 1rem; }
+  .mm-btn-main, .mm-btn-cancel {
+    padding: 7px 10px;
+    font-size: 0.98rem;
+  }
+  .mm-table th, .mm-table td {
+    font-size: 11px;
+    padding: 4px 2px;
+  }
+}
+
       `}</style>
       <div className="match-manager-container">
         <div className="mm-header">{editId ? "Editar Partido" : "Programar Partido"}</div>

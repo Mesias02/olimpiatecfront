@@ -84,13 +84,17 @@ export default function LoginForm() {
                 className="form-input"
               />
               <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="password-toggle"
-                tabIndex={-1}
-              >
-                {showPassword ? "🔒" : "🔓"}
-              </button>
+  type="button"
+  onClick={() => setShowPassword(!showPassword)}
+  className="password-toggle"
+  tabIndex={-1}
+  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+>
+  <span className="material-icons">
+    {showPassword ? "visibility_off" : "visibility"}
+  </span>
+</button>
+
             </div>
           </div>
 
@@ -273,23 +277,36 @@ export default function LoginForm() {
         }
 
         .password-toggle {
-          position: absolute;
-          right: 16px;
-          background: none;
-          border: none;
-          font-size: 18px;
-          cursor: pointer;
-          padding: 4px;
-          border-radius: 8px;
-          transition: background-color 0.2s ease;
-          z-index: 1;
-          top: 50%;
-          transform: translateY(-50%);
-        }
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+  width: 32px;         /* O el tamaño que veas bien */
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
 
-        .password-toggle:hover {
-          background: rgba(107, 114, 128, 0.1);
-        }
+.password-toggle .material-icons {
+  font-size: 2rem;     /* Igual a reset password */
+  line-height: 1;
+  /* Si no queda perfecto, puedes afinar con: */
+  position: relative;
+  top: -6px;           /* Juega con este valor para el ajuste pixel-perfect */
+}
+
+.password-toggle:hover {
+  background: rgba(8, 85, 238, 0.09);
+}
+
 
         .error-message {
           display: flex;

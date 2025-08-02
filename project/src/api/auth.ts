@@ -1,7 +1,7 @@
 import axios from "axios";
 import { RegisterDTO } from "../types/User";
 
-const API = process.env.REACT_APP_API_URL || "/api";
+const API = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 
 export const login = async (email: string, password: string) => {
